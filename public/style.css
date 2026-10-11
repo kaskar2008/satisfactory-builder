@@ -109,3 +109,5 @@ button[hidden],.button[hidden]{display:none!important}
 .recipe-list{touch-action:pan-y;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}@media(hover:none),(pointer:coarse){.recipe-tooltip{display:none!important}}
 
 @media(max-width:760px),(pointer:coarse){#label-settings .label-options{position:fixed;right:12px;top:var(--labels-menu-top,120px);width:245px;max-width:calc(100vw - 24px);max-height:calc(100dvh - var(--labels-menu-top,120px) - 12px);overflow-y:auto;overscroll-behavior:contain;z-index:80}.label-options label{min-height:44px}}
+
+body.view-expanded #generate{display:none}
