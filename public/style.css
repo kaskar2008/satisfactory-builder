@@ -103,3 +103,5 @@ button,.button{display:inline-flex;align-items:center;justify-content:center;gap
 body.generation-busy{overflow:hidden}#visualization-empty{position:absolute;inset:130px 20px 20px;display:grid;place-items:center;text-align:center;color:#a9c5d0;z-index:4;pointer-events:none}#visualization-empty[hidden]{display:none}.viewport.empty .graph-panel{display:none}.viewport.empty .scene-label,.viewport.empty .legend{visibility:hidden}.viewport.empty .view-toolbar{opacity:.5}
 
 button[hidden],.button[hidden]{display:none!important}
+
+@media(pointer:coarse){.view-toolbar{overflow-x:auto;align-items:center}.view-toolbar button,.graph-controls select{min-height:44px;flex-shrink:0}#selection{max-height:65%;overflow:auto;max-width:calc(100% - 40px)}#close-selection{min-width:36px;min-height:36px}.recipe-option{min-height:56px}}
