@@ -1,0 +1,6 @@
+const {test}=require('node:test'),assert=require('node:assert/strict'),P=require('../public/planner.js');
+const base={product:'frame',rate:10,floors:2,width:48,belt:270,external:[]};
+test('modular frames aggregate shared iron rod demand',()=>{const p=P.plan(base);assert.equal(p.imports.ore,240);assert.equal(p.groups.find(g=>g.id==='rod').rate,105);assert.equal(p.groups.find(g=>g.id==='reinforced').rate,15);assert.equal(p.groups.find(g=>g.id==='frame').count,5)});
+test('external intermediate cuts its upstream chain',()=>{const p=P.plan({...base,external:['reinforced']});assert.equal(p.imports.reinforced,15);assert.equal(p.imports.ore,60);assert.equal(p.groups.some(g=>g.id==='screw'),false)});
+test('machines fit their floors without overlapping',()=>{for(const product of Object.keys(P.recipes)){const p=P.plan({...base,product,rate:Object.keys(P.recipes).indexOf(product)<17?25:1,_layoutOnly:true});for(const a of p.machines){assert.ok(a.x>=0&&a.x+a.w<=p.width);assert.ok(a.z+a.d<=p.length);for(const b of p.machines){if(a.id>=b.id||a.floor!==b.floor)continue;assert.ok(a.x+a.w<=b.x||b.x+b.w<=a.x||a.z+a.d<=b.z||b.z+b.d<=a.z)}}}});
+test('reject malformed project and invalid rates',()=>{for(const rate of [NaN,0,-1,100001])assert.throws(()=>P.plan({...base,rate}));assert.throws(()=>P.plan({...base,product:'unknown'}))});

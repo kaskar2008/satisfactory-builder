@@ -1,0 +1,4 @@
+// Isolated benchmark server: never reads or modifies the saved user factory.
+const http=require('node:http'),fs=require('node:fs'),path=require('node:path');
+const allowed=new Set(['performance-benchmark.html','performance-benchmark.js','recipe-catalog.js','logistics.js','bounded.js','planner.js','gpu.js','simulation.js','scene.js']);
+http.createServer((req,res)=>{const name=new URL(req.url,'http://localhost').pathname.slice(1)||'performance-benchmark.html';if(!allowed.has(name)){res.writeHead(404);res.end();return}fs.readFile(path.join(['performance-benchmark.html','performance-benchmark.js'].includes(name)?__dirname:path.resolve(__dirname,'../public'),name),(err,data)=>{if(err){res.writeHead(500);res.end(err.message);return}res.setHeader('Content-Type',name.endsWith('.html')?'text/html; charset=utf-8':'text/javascript; charset=utf-8');res.end(data)})}).listen(5174,'127.0.0.1',()=>console.log('Benchmark: http://127.0.0.1:5174/'));

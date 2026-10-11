@@ -1,0 +1,5 @@
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+test('orbit keeps the clicked pivot fixed after pan and zoom',()=>{
+ const c={FactoryScene:{pickSurface:()=>null},current:{width:64,length:48,floors:[{y:0,height:30}]},canvas:{getBoundingClientRect:()=>({width:1000,height:700,left:0,top:0})},$:()=>({value:'all'}),FactoryLogistics:{displayBase:()=>0},usedFloors:()=>1,angle:-.65,tilt:.65,zoom:2,panX:137,panY:-81};vm.createContext(c);const source=fs.readFileSync('public/app.js','utf8');vm.runInContext(source.slice(source.indexOf('function orbitPivot(event)'),source.indexOf('let pointer=null')),c);const pivot=c.orbitPivot({clientX:230,clientY:190});
+ for(const angle of [-2,0,1,3])for(const tilt of [.03,.65,1.4]){c.angle=angle;c.tilt=tilt;c.centerOrbitPivot(pivot);const x=500+c.panX+(pivot.x*Math.cos(angle)-pivot.z*Math.sin(angle))*pivot.scale,y=455+c.panY+((pivot.x*Math.sin(angle)+pivot.z*Math.cos(angle))*Math.cos(tilt)-pivot.y*Math.sin(tilt))*pivot.scale;assert.ok(Math.abs(x-230)<1e-8);assert.ok(Math.abs(y-190)<1e-8)}
+});

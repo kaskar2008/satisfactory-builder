@@ -1,0 +1,2857 @@
+{
+  "version": 1,
+  "savedAt": 1791670286869,
+  "moduleFlow": "legacy",
+  "config": {
+    "recipeId": "Recipe_AluminumScrap_C",
+    "independentModules": false,
+    "allowFeedback": true,
+    "externalFeedbackItems": [],
+    "preset": "custom",
+    "length": 48,
+    "height": 48,
+    "product": "aluminumScrap",
+    "rate": 360,
+    "floors": "auto",
+    "width": 48,
+    "belt": 270,
+    "pipeCapacity": 300,
+    "liftClearance": 4,
+    "clockLimit": 100,
+    "external": []
+  },
+  "proposal": {
+    "kind": "stages",
+    "description": "Этапы размещены в модулях с использованием доступных этажей (до уплотнения: 2). Общий целевой выпуск сохранён. Совместимые этапы объединены для уменьшения количества модулей. Обратные связи разрешены.",
+    "links": [
+      {
+        "item": "aluminaSolution",
+        "rate": 240
+      },
+      {
+        "item": "water",
+        "rate": 360
+      }
+    ]
+  },
+  "modules": [
+    {
+      "config": {
+        "recipeId": "Recipe_AluminumScrap_C",
+        "independentModules": false,
+        "allowFeedback": true,
+        "externalFeedbackItems": [],
+        "preset": "custom",
+        "length": 48,
+        "height": 48,
+        "product": "aluminaSolution",
+        "rate": 240,
+        "floors": "auto",
+        "width": 48,
+        "belt": 270,
+        "pipeCapacity": 300,
+        "liftClearance": 4,
+        "clockLimit": 100,
+        "external": [
+          "bauxite",
+          "water"
+        ],
+        "_compactSupply": true,
+        "_efficiencyBudget": 32,
+        "junctionSpacing": 12,
+        "terminalMode": "legacy",
+        "allowRotations": false
+      },
+      "exports": {
+        "aluminaSolution": 240,
+        "silica": 100
+      },
+      "imports": {
+        "bauxite": 240,
+        "water": 360
+      },
+      "power": 60,
+      "shards": 0,
+      "width": 48,
+      "length": 48,
+      "bounds": {
+        "width": 48,
+        "length": 48,
+        "height": 48
+      },
+      "fit": {
+        "attempts": 3,
+        "repacked": true,
+        "strategy": "depth",
+        "gap": 3,
+        "padding": 10,
+        "usedFloors": 1,
+        "maxFloors": 1,
+        "floorMode": "auto",
+        "optimization": {
+          "validLayouts": 3,
+          "additionalRoutes": 2,
+          "cost": {
+            "modules": 1,
+            "machines": 2,
+            "splitters": 1,
+            "mergers": 2,
+            "lifts": 7,
+            "horizontalLength": 127.05999999999997,
+            "verticalLength": 32,
+            "score": 263.46
+          }
+        }
+      },
+      "floors": [
+        {
+          "index": 0,
+          "y": 0,
+          "height": 32,
+          "equipmentHeight": 30,
+          "ceiling": 32
+        }
+      ],
+      "connections": [
+        {
+          "from": "bauxite",
+          "to": "aluminaSolution",
+          "rate": 240,
+          "lanes": 1
+        },
+        {
+          "from": "water",
+          "to": "aluminaSolution",
+          "rate": 360,
+          "lanes": 2
+        }
+      ],
+      "machines": [
+        {
+          "id": 0,
+          "group": "aluminaSolution",
+          "floor": 0,
+          "x": 10,
+          "z": 8,
+          "y": 0,
+          "w": 10,
+          "d": 22,
+          "h": 30,
+          "b": "refinery",
+          "clock": 1,
+          "shards": 0,
+          "rotation": 0
+        },
+        {
+          "id": 1,
+          "group": "aluminaSolution",
+          "floor": 0,
+          "x": 23,
+          "z": 8,
+          "y": 0,
+          "w": 10,
+          "d": 22,
+          "h": 30,
+          "b": "refinery",
+          "clock": 1,
+          "shards": 0,
+          "rotation": 0
+        }
+      ],
+      "groups": [
+        {
+          "id": "aluminaSolution",
+          "b": "refinery",
+          "count": 2,
+          "clock": 1,
+          "clockCeiling": 1,
+          "depth": 1,
+          "floor": 0,
+          "rate": 240,
+          "machines": [
+            0,
+            1
+          ],
+          "floors": [
+            0
+          ]
+        }
+      ],
+      "logistics": {
+        "rules": {
+          "maxSlope": 35,
+          "minRadius": 2,
+          "minSegment": 0.5,
+          "maxSegment": 56,
+          "minLift": 4,
+          "maxLift": 48,
+          "nodeSize": 4,
+          "nodeHeight": 3,
+          "heightStep": 0.3
+        },
+        "manifolds": [
+          {
+            "id": "aluminaSolution",
+            "floor": 0,
+            "inputs": {
+              "bauxite": [
+                {
+                  "rate": 240,
+                  "machines": [
+                    0,
+                    1
+                  ],
+                  "floor": 0
+                }
+              ],
+              "water": [
+                {
+                  "rate": 180,
+                  "machines": [
+                    0
+                  ],
+                  "floor": 0
+                },
+                {
+                  "rate": 180,
+                  "machines": [
+                    1
+                  ],
+                  "floor": 0
+                }
+              ]
+            },
+            "outputs": [
+              {
+                "rate": 240,
+                "machines": [
+                  0,
+                  1
+                ],
+                "floor": 0
+              }
+            ]
+          },
+          {
+            "id": "silica",
+            "floor": 0,
+            "inputs": {},
+            "outputs": [
+              {
+                "rate": 100,
+                "machines": [
+                  0,
+                  1
+                ],
+                "floor": 0
+              }
+            ]
+          }
+        ],
+        "transfers": [
+          {
+            "from": "bauxite",
+            "to": "aluminaSolution",
+            "sourceLane": 0,
+            "targetLane": 0,
+            "rate": 240,
+            "external": true,
+            "lift": false,
+            "liftPosition": {
+              "x": 56,
+              "z": 56
+            },
+            "height": 0,
+            "targetPort": {
+              "point": [
+                38,
+                5.2,
+                4
+              ],
+              "dir": [
+                0,
+                0,
+                -1
+              ]
+            }
+          },
+          {
+            "from": "water",
+            "to": "aluminaSolution",
+            "sourceLane": 0,
+            "targetLane": 0,
+            "rate": 180,
+            "external": true,
+            "lift": false,
+            "liftPosition": {
+              "x": 56,
+              "z": 60
+            },
+            "height": 0,
+            "targetPort": {
+              "point": [
+                16.666666666666668,
+                1.2,
+                8
+              ],
+              "dir": [
+                0,
+                0,
+                -1
+              ],
+              "rate": 180
+            }
+          },
+          {
+            "from": "water",
+            "to": "aluminaSolution",
+            "sourceLane": 0,
+            "targetLane": 1,
+            "rate": 180,
+            "external": true,
+            "lift": false,
+            "liftPosition": {
+              "x": 56,
+              "z": 64
+            },
+            "height": 0,
+            "targetPort": {
+              "point": [
+                29.666666666666668,
+                1.2,
+                8
+              ],
+              "dir": [
+                0,
+                0,
+                -1
+              ],
+              "rate": 180
+            }
+          }
+        ],
+        "routing": "spatial",
+        "searchStats": {
+          "searchedRoutes": 4,
+          "improvedRoutes": 7,
+          "expanded": 490,
+          "limitedRoutes": 0,
+          "reassignedPorts": 2,
+          "movedImports": 3,
+          "movedExports": 2
+        },
+        "routingMetrics": {
+          "horizontalLength": 127.05999999999997,
+          "verticalLength": 32
+        },
+        "nodes": [
+          {
+            "id": 0,
+            "type": "splitter",
+            "item": "bauxite",
+            "floor": 0,
+            "point": [
+              38,
+              5.2,
+              6
+            ],
+            "ports": {
+              "input": {
+                "point": [
+                  38,
+                  5.2,
+                  4
+                ],
+                "dir": [
+                  0,
+                  0,
+                  -1
+                ]
+              },
+              "outputs": [
+                {
+                  "point": [
+                    40,
+                    5.2,
+                    6
+                  ],
+                  "dir": [
+                    1,
+                    0,
+                    0
+                  ]
+                },
+                {
+                  "point": [
+                    38,
+                    5.2,
+                    8
+                  ],
+                  "dir": [
+                    0,
+                    0,
+                    1
+                  ]
+                },
+                {
+                  "point": [
+                    36,
+                    5.2,
+                    6
+                  ],
+                  "dir": [
+                    -1,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            "rotation": 0
+          },
+          {
+            "id": 1,
+            "type": "merger",
+            "item": "aluminaSolution",
+            "floor": 0,
+            "point": [
+              18,
+              5.2,
+              38
+            ],
+            "ports": {
+              "inputs": [
+                {
+                  "point": [
+                    16,
+                    5.2,
+                    38
+                  ],
+                  "dir": [
+                    -1,
+                    0,
+                    0
+                  ]
+                },
+                {
+                  "point": [
+                    18,
+                    5.2,
+                    36
+                  ],
+                  "dir": [
+                    0,
+                    0,
+                    -1
+                  ]
+                },
+                {
+                  "point": [
+                    20,
+                    5.2,
+                    38
+                  ],
+                  "dir": [
+                    1,
+                    0,
+                    0
+                  ]
+                }
+              ],
+              "output": {
+                "point": [
+                  18,
+                  5.2,
+                  40
+                ],
+                "dir": [
+                  0,
+                  0,
+                  1
+                ]
+              }
+            },
+            "rotation": 0,
+            "transport": "pipe",
+            "name": "Трубопроводная развязка"
+          },
+          {
+            "id": 2,
+            "type": "merger",
+            "item": "silica",
+            "floor": 0,
+            "point": [
+              30,
+              5.2,
+              38
+            ],
+            "ports": {
+              "inputs": [
+                {
+                  "point": [
+                    28,
+                    5.2,
+                    38
+                  ],
+                  "dir": [
+                    -1,
+                    0,
+                    0
+                  ]
+                },
+                {
+                  "point": [
+                    30,
+                    5.2,
+                    36
+                  ],
+                  "dir": [
+                    0,
+                    0,
+                    -1
+                  ]
+                },
+                {
+                  "point": [
+                    32,
+                    5.2,
+                    38
+                  ],
+                  "dir": [
+                    1,
+                    0,
+                    0
+                  ]
+                }
+              ],
+              "output": {
+                "point": [
+                  30,
+                  5.2,
+                  40
+                ],
+                "dir": [
+                  0,
+                  0,
+                  1
+                ]
+              }
+            },
+            "rotation": 0
+          }
+        ],
+        "edges": [
+          {
+            "id": 0,
+            "from": {
+              "point": [
+                38,
+                5.2,
+                8
+              ],
+              "dir": [
+                0,
+                0,
+                1
+              ]
+            },
+            "to": {
+              "point": [
+                13.333333333333334,
+                1.2,
+                8
+              ],
+              "dir": [
+                0,
+                0,
+                -1
+              ],
+              "rate": 120
+            },
+            "item": "bauxite",
+            "rate": 120,
+            "color": "#63d9c3",
+            "fromLead": 2,
+            "toLead": 2,
+            "points": [
+              [
+                38,
+                5.2,
+                8
+              ],
+              [
+                38,
+                5.2,
+                10
+              ],
+              [
+                38,
+                9.2,
+                10
+              ],
+              [
+                35.1,
+                9.2,
+                10
+              ],
+              [
+                35.1,
+                9.2,
+                6
+              ],
+              [
+                13.333333333333334,
+                9.2,
+                6
+              ],
+              [
+                13.333333333333334,
+                1.2,
+                6
+              ],
+              [
+                13.333333333333334,
+                1.2,
+                8
+              ]
+            ],
+            "kind": "belt",
+            "capacity": 270
+          },
+          {
+            "id": 1,
+            "from": {
+              "point": [
+                36,
+                5.2,
+                6
+              ],
+              "dir": [
+                -1,
+                0,
+                0
+              ]
+            },
+            "to": {
+              "point": [
+                26.333333333333332,
+                1.2,
+                8
+              ],
+              "dir": [
+                0,
+                0,
+                -1
+              ],
+              "rate": 120
+            },
+            "item": "bauxite",
+            "rate": 120,
+            "color": "#63d9c3",
+            "fromLead": 2,
+            "toLead": 3.5,
+            "points": [
+              [
+                36,
+                5.2,
+                6
+              ],
+              [
+                26.333333333333332,
+                5.2,
+                6
+              ],
+              [
+                26.333333333333332,
+                5.2,
+                4.5
+              ],
+              [
+                26.333333333333332,
+                1.2,
+                4.5
+              ],
+              [
+                26.333333333333332,
+                1.2,
+                8
+              ]
+            ],
+            "kind": "belt",
+            "capacity": 270
+          },
+          {
+            "id": 2,
+            "from": {
+              "point": [
+                13.333333333333334,
+                1.2,
+                30
+              ],
+              "dir": [
+                0,
+                0,
+                1
+              ],
+              "rate": 120
+            },
+            "to": {
+              "point": [
+                16,
+                5.2,
+                38
+              ],
+              "dir": [
+                -1,
+                0,
+                0
+              ]
+            },
+            "item": "aluminaSolution",
+            "rate": 120,
+            "color": "#879ff0",
+            "fromLead": 2.02,
+            "toLead": 2.02,
+            "points": [
+              [
+                13.333333333333334,
+                1.2,
+                30
+              ],
+              [
+                13.333333333333334,
+                1.2,
+                32.02
+              ],
+              [
+                13.333333333333334,
+                5.2,
+                32.02
+              ],
+              [
+                13.333333333333334,
+                5.2,
+                38
+              ],
+              [
+                16,
+                5.2,
+                38
+              ]
+            ],
+            "kind": "pipe",
+            "capacity": 300,
+            "crossSection": 1,
+            "volume": 14.666666666666666,
+            "segments": [
+              {
+                "from": [
+                  13.333333333333334,
+                  1.2,
+                  30
+                ],
+                "to": [
+                  13.333333333333334,
+                  1.2,
+                  32.02
+                ],
+                "volume": 2.020000000000003
+              },
+              {
+                "from": [
+                  13.333333333333334,
+                  1.2,
+                  32.02
+                ],
+                "to": [
+                  13.333333333333334,
+                  5.2,
+                  32.02
+                ],
+                "volume": 4
+              },
+              {
+                "from": [
+                  13.333333333333334,
+                  5.2,
+                  32.02
+                ],
+                "to": [
+                  13.333333333333334,
+                  5.2,
+                  38
+                ],
+                "volume": 5.979999999999997
+              },
+              {
+                "from": [
+                  13.333333333333334,
+                  5.2,
+                  38
+                ],
+                "to": [
+                  16,
+                  5.2,
+                  38
+                ],
+                "volume": 2.666666666666666
+              }
+            ],
+            "pumps": []
+          },
+          {
+            "id": 3,
+            "from": {
+              "point": [
+                26.333333333333332,
+                1.2,
+                30
+              ],
+              "dir": [
+                0,
+                0,
+                1
+              ],
+              "rate": 120
+            },
+            "to": {
+              "point": [
+                18,
+                5.2,
+                36
+              ],
+              "dir": [
+                0,
+                0,
+                -1
+              ]
+            },
+            "item": "aluminaSolution",
+            "rate": 120,
+            "color": "#879ff0",
+            "fromLead": 3.52,
+            "toLead": 2.02,
+            "points": [
+              [
+                26.333333333333332,
+                1.2,
+                30
+              ],
+              [
+                26.333333333333332,
+                1.2,
+                33.52
+              ],
+              [
+                26.333333333333332,
+                5.2,
+                33.52
+              ],
+              [
+                18,
+                5.2,
+                33.52
+              ],
+              [
+                18,
+                5.2,
+                36
+              ]
+            ],
+            "kind": "pipe",
+            "capacity": 300,
+            "crossSection": 1,
+            "volume": 18.333333333333332,
+            "segments": [
+              {
+                "from": [
+                  26.333333333333332,
+                  1.2,
+                  30
+                ],
+                "to": [
+                  26.333333333333332,
+                  1.2,
+                  33.52
+                ],
+                "volume": 3.520000000000003
+              },
+              {
+                "from": [
+                  26.333333333333332,
+                  1.2,
+                  33.52
+                ],
+                "to": [
+                  26.333333333333332,
+                  5.2,
+                  33.52
+                ],
+                "volume": 4
+              },
+              {
+                "from": [
+                  26.333333333333332,
+                  5.2,
+                  33.52
+                ],
+                "to": [
+                  18,
+                  5.2,
+                  33.52
+                ],
+                "volume": 8.333333333333332
+              },
+              {
+                "from": [
+                  18,
+                  5.2,
+                  33.52
+                ],
+                "to": [
+                  18,
+                  5.2,
+                  36
+                ],
+                "volume": 2.479999999999997
+              }
+            ],
+            "pumps": []
+          },
+          {
+            "id": 4,
+            "from": {
+              "point": [
+                16.666666666666668,
+                1.2,
+                30
+              ],
+              "dir": [
+                0,
+                0,
+                1
+              ],
+              "rate": 50
+            },
+            "to": {
+              "point": [
+                32,
+                5.2,
+                38
+              ],
+              "dir": [
+                1,
+                0,
+                0
+              ]
+            },
+            "item": "silica",
+            "rate": 50,
+            "color": "#f181b5",
+            "fromLead": 2.03,
+            "toLead": 2.03,
+            "points": [
+              [
+                16.666666666666668,
+                1.2,
+                30
+              ],
+              [
+                16.666666666666668,
+                1.2,
+                38
+              ],
+              [
+                34.03,
+                1.2,
+                38
+              ],
+              [
+                34.03,
+                5.2,
+                38
+              ],
+              [
+                32,
+                5.2,
+                38
+              ]
+            ],
+            "kind": "belt",
+            "capacity": 270
+          },
+          {
+            "id": 5,
+            "from": {
+              "point": [
+                29.666666666666668,
+                1.2,
+                30
+              ],
+              "dir": [
+                0,
+                0,
+                1
+              ],
+              "rate": 50
+            },
+            "to": {
+              "point": [
+                30,
+                5.2,
+                36
+              ],
+              "dir": [
+                0,
+                0,
+                -1
+              ]
+            },
+            "item": "silica",
+            "rate": 50,
+            "color": "#f181b5",
+            "fromLead": 3.53,
+            "toLead": 2.03,
+            "points": [
+              [
+                29.666666666666668,
+                1.2,
+                30
+              ],
+              [
+                29.666666666666668,
+                1.2,
+                33.53
+              ],
+              [
+                29.666666666666668,
+                5.2,
+                33.53
+              ],
+              [
+                30,
+                5.2,
+                33.53
+              ],
+              [
+                30,
+                5.2,
+                36
+              ]
+            ],
+            "kind": "belt",
+            "capacity": 270
+          },
+          {
+            "id": 6,
+            "from": {
+              "point": [
+                18,
+                5.2,
+                40
+              ],
+              "dir": [
+                0,
+                0,
+                1
+              ]
+            },
+            "to": {
+              "point": [
+                18,
+                5.2,
+                45
+              ],
+              "dir": [
+                0,
+                0,
+                -1
+              ],
+              "kind": "export"
+            },
+            "item": "aluminaSolution",
+            "rate": 240,
+            "color": "#879ff0",
+            "fromLead": 2.02,
+            "toLead": 2.02,
+            "points": [
+              [
+                18,
+                5.2,
+                40
+              ],
+              [
+                18,
+                5.2,
+                45
+              ]
+            ],
+            "kind": "pipe",
+            "capacity": 300,
+            "crossSection": 1,
+            "volume": 5,
+            "segments": [
+              {
+                "from": [
+                  18,
+                  5.2,
+                  40
+                ],
+                "to": [
+                  18,
+                  5.2,
+                  45
+                ],
+                "volume": 5
+              }
+            ],
+            "pumps": []
+          },
+          {
+            "id": 7,
+            "from": {
+              "point": [
+                30,
+                5.2,
+                40
+              ],
+              "dir": [
+                0,
+                0,
+                1
+              ]
+            },
+            "to": {
+              "point": [
+                30,
+                5.2,
+                45
+              ],
+              "dir": [
+                0,
+                0,
+                -1
+              ],
+              "kind": "export"
+            },
+            "item": "silica",
+            "rate": 100,
+            "color": "#f181b5",
+            "fromLead": 2.03,
+            "toLead": 2.03,
+            "points": [
+              [
+                30,
+                5.2,
+                40
+              ],
+              [
+                30,
+                5.2,
+                45
+              ]
+            ],
+            "kind": "belt",
+            "capacity": 270
+          },
+          {
+            "id": 8,
+            "from": {
+              "point": [
+                38,
+                5.2,
+                3
+              ],
+              "dir": [
+                0,
+                0,
+                1
+              ],
+              "kind": "import"
+            },
+            "to": {
+              "point": [
+                38,
+                5.2,
+                4
+              ],
+              "dir": [
+                0,
+                0,
+                -1
+              ]
+            },
+            "item": "bauxite",
+            "rate": 240,
+            "color": "#63d9c3",
+            "fromLead": 2,
+            "toLead": 2,
+            "points": [
+              [
+                38,
+                5.2,
+                3
+              ],
+              [
+                38,
+                5.2,
+                4
+              ]
+            ],
+            "kind": "belt",
+            "capacity": 270
+          },
+          {
+            "id": 9,
+            "from": {
+              "point": [
+                16.666666666666668,
+                1.2,
+                3
+              ],
+              "dir": [
+                0,
+                0,
+                1
+              ],
+              "kind": "import"
+            },
+            "to": {
+              "point": [
+                16.666666666666668,
+                1.2,
+                8
+              ],
+              "dir": [
+                0,
+                0,
+                -1
+              ],
+              "rate": 180
+            },
+            "item": "water",
+            "rate": 180,
+            "color": "#efb86d",
+            "fromLead": 2.01,
+            "toLead": 3.51,
+            "points": [
+              [
+                16.666666666666668,
+                1.2,
+                3
+              ],
+              [
+                16.666666666666668,
+                1.2,
+                8
+              ]
+            ],
+            "kind": "pipe",
+            "capacity": 300,
+            "crossSection": 1,
+            "volume": 5,
+            "segments": [
+              {
+                "from": [
+                  16.666666666666668,
+                  1.2,
+                  3
+                ],
+                "to": [
+                  16.666666666666668,
+                  1.2,
+                  8
+                ],
+                "volume": 5
+              }
+            ],
+            "pumps": []
+          },
+          {
+            "id": 10,
+            "from": {
+              "point": [
+                29.666666666666668,
+                1.2,
+                3
+              ],
+              "dir": [
+                0,
+                0,
+                1
+              ],
+              "kind": "import"
+            },
+            "to": {
+              "point": [
+                29.666666666666668,
+                1.2,
+                8
+              ],
+              "dir": [
+                0,
+                0,
+                -1
+              ],
+              "rate": 180
+            },
+            "item": "water",
+            "rate": 180,
+            "color": "#efb86d",
+            "fromLead": 2.01,
+            "toLead": 5.01,
+            "points": [
+              [
+                29.666666666666668,
+                1.2,
+                3
+              ],
+              [
+                29.666666666666668,
+                1.2,
+                8
+              ]
+            ],
+            "kind": "pipe",
+            "capacity": 300,
+            "crossSection": 1,
+            "volume": 5,
+            "segments": [
+              {
+                "from": [
+                  29.666666666666668,
+                  1.2,
+                  3
+                ],
+                "to": [
+                  29.666666666666668,
+                  1.2,
+                  8
+                ],
+                "volume": 5
+              }
+            ],
+            "pumps": []
+          }
+        ],
+        "products": [
+          "bauxite",
+          "water",
+          "aluminaSolution",
+          "silica"
+        ],
+        "colors": {
+          "bauxite": "#63d9c3",
+          "water": "#efb86d",
+          "aluminaSolution": "#879ff0",
+          "silica": "#f181b5"
+        },
+        "liftPositions": [
+          {
+            "x": 38,
+            "z": 10,
+            "minY": 5.2,
+            "maxY": 9.2,
+            "item": "bauxite"
+          },
+          {
+            "x": 13.333333333333334,
+            "z": 6,
+            "minY": 1.2,
+            "maxY": 9.2,
+            "item": "bauxite"
+          },
+          {
+            "x": 26.333333333333332,
+            "z": 4.5,
+            "minY": 1.2,
+            "maxY": 5.2,
+            "item": "bauxite"
+          },
+          {
+            "x": 13.333333333333334,
+            "z": 32.02,
+            "minY": 1.2,
+            "maxY": 5.2,
+            "item": "aluminaSolution"
+          },
+          {
+            "x": 26.333333333333332,
+            "z": 33.52,
+            "minY": 1.2,
+            "maxY": 5.2,
+            "item": "aluminaSolution"
+          },
+          {
+            "x": 34.03,
+            "z": 38,
+            "minY": 1.2,
+            "maxY": 5.2,
+            "item": "silica"
+          },
+          {
+            "x": 29.666666666666668,
+            "z": 33.53,
+            "minY": 1.2,
+            "maxY": 5.2,
+            "item": "silica"
+          }
+        ],
+        "splitters": 1,
+        "mergers": 2,
+        "lifts": 7,
+        "clearance": 4,
+        "issues": [],
+        "strategy": "manifold",
+        "pumpPower": 0
+      }
+    },
+    {
+      "config": {
+        "recipeId": "Recipe_AluminumScrap_C",
+        "independentModules": false,
+        "allowFeedback": true,
+        "externalFeedbackItems": [],
+        "preset": "custom",
+        "length": 48,
+        "height": 48,
+        "product": "aluminumScrap",
+        "rate": 360,
+        "floors": "auto",
+        "width": 48,
+        "belt": 270,
+        "pipeCapacity": 300,
+        "liftClearance": 4,
+        "clockLimit": 100,
+        "external": [
+          "aluminaSolution",
+          "coal"
+        ],
+        "_efficiencyBudget": 64,
+        "junctionSpacing": 12,
+        "terminalMode": "compact",
+        "allowRotations": false
+      },
+      "exports": {
+        "aluminumScrap": 360,
+        "water": 120
+      },
+      "imports": {
+        "aluminaSolution": 240,
+        "coal": 120
+      },
+      "power": 24.000001578501838,
+      "width": 48,
+      "length": 48,
+      "bounds": {
+        "width": 48,
+        "length": 48,
+        "height": 48
+      },
+      "fit": {
+        "attempts": 1,
+        "repacked": true,
+        "strategy": "depth",
+        "gap": 3,
+        "padding": 12,
+        "usedFloors": 1,
+        "maxFloors": 1,
+        "floorMode": "auto",
+        "optimization": {
+          "validLayouts": 3,
+          "additionalRoutes": 2,
+          "cost": {
+            "modules": 1,
+            "machines": 2,
+            "splitters": 2,
+            "mergers": 1,
+            "lifts": 7,
+            "horizontalLength": 161.39333333333332,
+            "verticalLength": 24,
+            "score": 288.1933333333333
+          }
+        }
+      },
+      "floors": [
+        {
+          "index": 0,
+          "y": 0,
+          "height": 32,
+          "equipmentHeight": 30,
+          "ceiling": 32
+        }
+      ],
+      "connections": [
+        {
+          "from": "aluminaSolution",
+          "to": "aluminumScrap",
+          "rate": 240,
+          "lanes": 1
+        },
+        {
+          "from": "coal",
+          "to": "aluminumScrap",
+          "rate": 120,
+          "lanes": 1
+        }
+      ],
+      "machines": [
+        {
+          "id": 0,
+          "group": "aluminumScrap",
+          "floor": 0,
+          "x": 12,
+          "z": 8,
+          "y": 0,
+          "w": 10,
+          "d": 22,
+          "h": 30,
+          "b": "refinery",
+          "clock": 0.5,
+          "shards": 0,
+          "rotation": 0
+        },
+        {
+          "id": 1,
+          "group": "aluminumScrap",
+          "floor": 0,
+          "x": 25,
+          "z": 8,
+          "y": 0,
+          "w": 10,
+          "d": 22,
+          "h": 30,
+          "b": "refinery",
+          "clock": 0.5,
+          "shards": 0,
+          "rotation": 0
+        }
+      ],
+      "groups": [
+        {
+          "id": "aluminumScrap",
+          "rate": 360,
+          "count": 2,
+          "clock": 0.5,
+          "clockCeiling": 0.75,
+          "b": "refinery",
+          "depth": 0,
+          "minimumCount": 2,
+          "floor": 0,
+          "machines": [
+            0,
+            1
+          ],
+          "floors": [
+            0
+          ]
+        }
+      ],
+      "logistics": {
+        "rules": {
+          "maxSlope": 35,
+          "minRadius": 2,
+          "minSegment": 0.5,
+          "maxSegment": 56,
+          "minLift": 4,
+          "maxLift": 48,
+          "nodeSize": 4,
+          "nodeHeight": 3,
+          "heightStep": 0.3
+        },
+        "manifolds": [
+          {
+            "id": "aluminumScrap",
+            "floor": 0,
+            "inputs": {
+              "aluminaSolution": [
+                {
+                  "rate": 240,
+                  "machines": [
+                    0,
+                    1
+                  ],
+                  "floor": 0
+                }
+              ],
+              "coal": [
+                {
+                  "rate": 120,
+                  "machines": [
+                    0,
+                    1
+                  ],
+                  "floor": 0
+                }
+              ]
+            },
+            "outputs": [
+              {
+                "rate": 180,
+                "machines": [
+                  0
+                ],
+                "floor": 0
+              },
+              {
+                "rate": 180,
+                "machines": [
+                  1
+                ],
+                "floor": 0
+              }
+            ]
+          },
+          {
+            "id": "water",
+            "floor": 0,
+            "inputs": {},
+            "outputs": [
+              {
+                "rate": 120,
+                "machines": [
+                  0,
+                  1
+                ],
+                "floor": 0
+              }
+            ]
+          }
+        ],
+        "transfers": [
+          {
+            "from": "aluminaSolution",
+            "to": "aluminumScrap",
+            "sourceLane": 0,
+            "targetLane": 0,
+            "rate": 240,
+            "external": true,
+            "lift": false,
+            "liftPosition": {
+              "x": 56,
+              "z": 56
+            },
+            "height": 0,
+            "targetPort": {
+              "point": [
+                6,
+                5.2,
+                4
+              ],
+              "dir": [
+                0,
+                0,
+                -1
+              ]
+            }
+          },
+          {
+            "from": "coal",
+            "to": "aluminumScrap",
+            "sourceLane": 0,
+            "targetLane": 0,
+            "rate": 120,
+            "external": true,
+            "lift": false,
+            "liftPosition": {
+              "x": 56,
+              "z": 60
+            },
+            "height": 0,
+            "targetPort": {
+              "point": [
+                42,
+                5.2,
+                4
+              ],
+              "dir": [
+                0,
+                0,
+                -1
+              ]
+            }
+          }
+        ],
+        "routing": "spatial",
+        "searchStats": {
+          "searchedRoutes": 6,
+          "improvedRoutes": 5,
+          "expanded": 110,
+          "limitedRoutes": 0,
+          "reassignedPorts": 2,
+          "movedImports": 2
+        },
+        "routingMetrics": {
+          "horizontalLength": 161.39333333333332,
+          "verticalLength": 24
+        },
+        "nodes": [
+          {
+            "id": 0,
+            "type": "splitter",
+            "item": "aluminaSolution",
+            "floor": 0,
+            "point": [
+              6,
+              5.2,
+              6
+            ],
+            "ports": {
+              "input": {
+                "point": [
+                  6,
+                  5.2,
+                  4
+                ],
+                "dir": [
+                  0,
+                  0,
+                  -1
+                ]
+              },
+              "outputs": [
+                {
+                  "point": [
+                    8,
+                    5.2,
+                    6
+                  ],
+                  "dir": [
+                    1,
+                    0,
+                    0
+                  ]
+                },
+                {
+                  "point": [
+                    6,
+                    5.2,
+                    8
+                  ],
+                  "dir": [
+                    0,
+                    0,
+                    1
+                  ]
+                },
+                {
+                  "point": [
+                    4,
+                    5.2,
+                    6
+                  ],
+                  "dir": [
+                    -1,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            "rotation": 0,
+            "transport": "pipe",
+            "name": "Трубопроводная развязка"
+          },
+          {
+            "id": 1,
+            "type": "splitter",
+            "item": "coal",
+            "floor": 0,
+            "point": [
+              42,
+              5.2,
+              6
+            ],
+            "ports": {
+              "input": {
+                "point": [
+                  42,
+                  5.2,
+                  4
+                ],
+                "dir": [
+                  0,
+                  0,
+                  -1
+                ]
+              },
+              "outputs": [
+                {
+                  "point": [
+                    44,
+                    5.2,
+                    6
+                  ],
+                  "dir": [
+                    1,
+                    0,
+                    0
+                  ]
+                },
+                {
+                  "point": [
+                    42,
+                    5.2,
+                    8
+                  ],
+                  "dir": [
+                    0,
+                    0,
+                    1
+                  ]
+                },
+                {
+                  "point": [
+                    40,
+                    5.2,
+                    6
+                  ],
+                  "dir": [
+                    -1,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            "rotation": 0
+          },
+          {
+            "id": 2,
+            "type": "merger",
+            "item": "water",
+            "floor": 0,
+            "point": [
+              26,
+              5.2,
+              38
+            ],
+            "ports": {
+              "inputs": [
+                {
+                  "point": [
+                    24,
+                    5.2,
+                    38
+                  ],
+                  "dir": [
+                    -1,
+                    0,
+                    0
+                  ]
+                },
+                {
+                  "point": [
+                    26,
+                    5.2,
+                    36
+                  ],
+                  "dir": [
+                    0,
+                    0,
+                    -1
+                  ]
+                },
+                {
+                  "point": [
+                    28,
+                    5.2,
+                    38
+                  ],
+                  "dir": [
+                    1,
+                    0,
+                    0
+                  ]
+                }
+              ],
+              "output": {
+                "point": [
+                  26,
+                  5.2,
+                  40
+                ],
+                "dir": [
+                  0,
+                  0,
+                  1
+                ]
+              }
+            },
+            "rotation": 0,
+            "transport": "pipe",
+            "name": "Трубопроводная развязка"
+          }
+        ],
+        "edges": [
+          {
+            "id": 0,
+            "from": {
+              "point": [
+                8,
+                5.2,
+                6
+              ],
+              "dir": [
+                1,
+                0,
+                0
+              ]
+            },
+            "to": {
+              "point": [
+                15.333333333333334,
+                1.2,
+                8
+              ],
+              "dir": [
+                0,
+                0,
+                -1
+              ],
+              "rate": 120
+            },
+            "item": "aluminaSolution",
+            "rate": 120,
+            "color": "#63d9c3",
+            "fromLead": 2,
+            "toLead": 2,
+            "points": [
+              [
+                8,
+                5.2,
+                6
+              ],
+              [
+                15.333333333333334,
+                5.2,
+                6
+              ],
+              [
+                15.333333333333334,
+                1.2,
+                6
+              ],
+              [
+                15.333333333333334,
+                1.2,
+                8
+              ]
+            ],
+            "kind": "pipe",
+            "capacity": 300,
+            "crossSection": 1,
+            "volume": 13.333333333333334,
+            "segments": [
+              {
+                "from": [
+                  8,
+                  5.2,
+                  6
+                ],
+                "to": [
+                  15.333333333333334,
+                  5.2,
+                  6
+                ],
+                "volume": 7.333333333333334
+              },
+              {
+                "from": [
+                  15.333333333333334,
+                  5.2,
+                  6
+                ],
+                "to": [
+                  15.333333333333334,
+                  1.2000000000000002,
+                  6
+                ],
+                "volume": 4
+              },
+              {
+                "from": [
+                  15.333333333333334,
+                  1.2,
+                  6
+                ],
+                "to": [
+                  15.333333333333334,
+                  1.2,
+                  8
+                ],
+                "volume": 2
+              }
+            ],
+            "pumps": []
+          },
+          {
+            "id": 1,
+            "from": {
+              "point": [
+                4,
+                5.2,
+                6
+              ],
+              "dir": [
+                -1,
+                0,
+                0
+              ]
+            },
+            "to": {
+              "point": [
+                28.333333333333332,
+                1.2,
+                8
+              ],
+              "dir": [
+                0,
+                0,
+                -1
+              ],
+              "rate": 120
+            },
+            "item": "aluminaSolution",
+            "rate": 120,
+            "color": "#63d9c3",
+            "fromLead": 2,
+            "toLead": 3.5,
+            "points": [
+              [
+                4,
+                5.2,
+                6
+              ],
+              [
+                2,
+                5.2,
+                6
+              ],
+              [
+                2,
+                3.7,
+                6
+              ],
+              [
+                2,
+                3.7,
+                4.5
+              ],
+              [
+                28.333333333333332,
+                3.7,
+                4.5
+              ],
+              [
+                28.333333333333332,
+                1.2,
+                4.5
+              ],
+              [
+                28.333333333333332,
+                1.2,
+                8
+              ]
+            ],
+            "kind": "pipe",
+            "capacity": 300,
+            "crossSection": 1,
+            "volume": 37.33333333333333,
+            "segments": [
+              {
+                "from": [
+                  4,
+                  5.2,
+                  6
+                ],
+                "to": [
+                  2,
+                  5.2,
+                  6
+                ],
+                "volume": 2
+              },
+              {
+                "from": [
+                  2,
+                  5.2,
+                  6
+                ],
+                "to": [
+                  2,
+                  3.7,
+                  6
+                ],
+                "volume": 1.5
+              },
+              {
+                "from": [
+                  2,
+                  3.7,
+                  6
+                ],
+                "to": [
+                  2,
+                  3.7,
+                  4.5
+                ],
+                "volume": 1.5
+              },
+              {
+                "from": [
+                  2,
+                  3.7,
+                  4.5
+                ],
+                "to": [
+                  28.333333333333332,
+                  3.7,
+                  4.5
+                ],
+                "volume": 26.333333333333332
+              },
+              {
+                "from": [
+                  28.333333333333332,
+                  3.7,
+                  4.5
+                ],
+                "to": [
+                  28.333333333333332,
+                  1.2000000000000002,
+                  4.5
+                ],
+                "volume": 2.5
+              },
+              {
+                "from": [
+                  28.333333333333332,
+                  1.2,
+                  4.5
+                ],
+                "to": [
+                  28.333333333333332,
+                  1.2,
+                  8
+                ],
+                "volume": 3.5
+              }
+            ],
+            "pumps": []
+          },
+          {
+            "id": 2,
+            "from": {
+              "point": [
+                44,
+                5.2,
+                6
+              ],
+              "dir": [
+                1,
+                0,
+                0
+              ]
+            },
+            "to": {
+              "point": [
+                18.666666666666668,
+                1.2,
+                8
+              ],
+              "dir": [
+                0,
+                0,
+                -1
+              ],
+              "rate": 60
+            },
+            "item": "coal",
+            "rate": 60,
+            "color": "#efb86d",
+            "fromLead": 2.01,
+            "toLead": 3.51,
+            "points": [
+              [
+                44,
+                5.2,
+                6
+              ],
+              [
+                46.01,
+                5.2,
+                6
+              ],
+              [
+                46.01,
+                1.2,
+                6
+              ],
+              [
+                46.01,
+                1.2,
+                1.4900000000000002
+              ],
+              [
+                18.666666666666668,
+                1.2,
+                1.4900000000000002
+              ],
+              [
+                18.666666666666668,
+                1.2,
+                8
+              ]
+            ],
+            "kind": "belt",
+            "capacity": 270
+          },
+          {
+            "id": 3,
+            "from": {
+              "point": [
+                40,
+                5.2,
+                6
+              ],
+              "dir": [
+                -1,
+                0,
+                0
+              ]
+            },
+            "to": {
+              "point": [
+                31.666666666666668,
+                1.2,
+                8
+              ],
+              "dir": [
+                0,
+                0,
+                -1
+              ],
+              "rate": 60
+            },
+            "item": "coal",
+            "rate": 60,
+            "color": "#efb86d",
+            "fromLead": 2.01,
+            "toLead": 5.01,
+            "points": [
+              [
+                40,
+                5.2,
+                6
+              ],
+              [
+                31.666666666666668,
+                5.2,
+                6
+              ],
+              [
+                31.666666666666668,
+                5.2,
+                2.99
+              ],
+              [
+                31.666666666666668,
+                1.2,
+                2.99
+              ],
+              [
+                31.666666666666668,
+                1.2,
+                8
+              ]
+            ],
+            "kind": "belt",
+            "capacity": 270
+          },
+          {
+            "id": 4,
+            "from": {
+              "point": [
+                18.666666666666668,
+                1.2,
+                30
+              ],
+              "dir": [
+                0,
+                0,
+                1
+              ],
+              "rate": 60
+            },
+            "to": {
+              "point": [
+                24,
+                5.2,
+                38
+              ],
+              "dir": [
+                -1,
+                0,
+                0
+              ]
+            },
+            "item": "water",
+            "rate": 60,
+            "color": "#f181b5",
+            "fromLead": 2.03,
+            "toLead": 2.03,
+            "points": [
+              [
+                18.666666666666668,
+                1.2,
+                30
+              ],
+              [
+                18.666666666666668,
+                1.2,
+                32.03
+              ],
+              [
+                18.666666666666668,
+                5.2,
+                32.03
+              ],
+              [
+                18.666666666666668,
+                5.2,
+                38
+              ],
+              [
+                24,
+                5.2,
+                38
+              ]
+            ],
+            "kind": "pipe",
+            "capacity": 300,
+            "crossSection": 1,
+            "volume": 17.333333333333332,
+            "segments": [
+              {
+                "from": [
+                  18.666666666666668,
+                  1.2,
+                  30
+                ],
+                "to": [
+                  18.666666666666668,
+                  1.2,
+                  32.03
+                ],
+                "volume": 2.030000000000001
+              },
+              {
+                "from": [
+                  18.666666666666668,
+                  1.2,
+                  32.03
+                ],
+                "to": [
+                  18.666666666666668,
+                  5.2,
+                  32.03
+                ],
+                "volume": 4
+              },
+              {
+                "from": [
+                  18.666666666666668,
+                  5.2,
+                  32.03
+                ],
+                "to": [
+                  18.666666666666668,
+                  5.2,
+                  38
+                ],
+                "volume": 5.969999999999999
+              },
+              {
+                "from": [
+                  18.666666666666668,
+                  5.2,
+                  38
+                ],
+                "to": [
+                  24,
+                  5.2,
+                  38
+                ],
+                "volume": 5.333333333333332
+              }
+            ],
+            "pumps": []
+          },
+          {
+            "id": 5,
+            "from": {
+              "point": [
+                31.666666666666668,
+                1.2,
+                30
+              ],
+              "dir": [
+                0,
+                0,
+                1
+              ],
+              "rate": 60
+            },
+            "to": {
+              "point": [
+                28,
+                5.2,
+                38
+              ],
+              "dir": [
+                1,
+                0,
+                0
+              ]
+            },
+            "item": "water",
+            "rate": 60,
+            "color": "#f181b5",
+            "fromLead": 3.53,
+            "toLead": 2.03,
+            "points": [
+              [
+                31.666666666666668,
+                1.2,
+                30
+              ],
+              [
+                31.666666666666668,
+                1.2,
+                38
+              ],
+              [
+                30.03,
+                1.2,
+                38
+              ],
+              [
+                30.03,
+                5.2,
+                38
+              ],
+              [
+                28,
+                5.2,
+                38
+              ]
+            ],
+            "kind": "pipe",
+            "capacity": 300,
+            "crossSection": 1,
+            "volume": 15.666666666666668,
+            "segments": [
+              {
+                "from": [
+                  31.666666666666668,
+                  1.2,
+                  30
+                ],
+                "to": [
+                  31.666666666666668,
+                  1.2,
+                  38
+                ],
+                "volume": 8
+              },
+              {
+                "from": [
+                  31.666666666666668,
+                  1.2,
+                  38
+                ],
+                "to": [
+                  30.03,
+                  1.2,
+                  38
+                ],
+                "volume": 1.6366666666666667
+              },
+              {
+                "from": [
+                  30.03,
+                  1.2,
+                  38
+                ],
+                "to": [
+                  30.03,
+                  5.2,
+                  38
+                ],
+                "volume": 4
+              },
+              {
+                "from": [
+                  30.03,
+                  5.2,
+                  38
+                ],
+                "to": [
+                  28,
+                  5.2,
+                  38
+                ],
+                "volume": 2.030000000000001
+              }
+            ],
+            "pumps": []
+          },
+          {
+            "id": 6,
+            "from": {
+              "point": [
+                15.333333333333334,
+                1.2,
+                30
+              ],
+              "dir": [
+                0,
+                0,
+                1
+              ],
+              "rate": 180
+            },
+            "to": {
+              "point": [
+                15.333333333333334,
+                1.2,
+                45
+              ],
+              "dir": [
+                0,
+                0,
+                -1
+              ],
+              "kind": "export"
+            },
+            "item": "aluminumScrap",
+            "rate": 180,
+            "color": "#879ff0",
+            "fromLead": 2.02,
+            "toLead": 2.02,
+            "points": [
+              [
+                15.333333333333334,
+                1.2,
+                30
+              ],
+              [
+                15.333333333333334,
+                1.2,
+                45
+              ]
+            ],
+            "kind": "belt",
+            "capacity": 270
+          },
+          {
+            "id": 7,
+            "from": {
+              "point": [
+                28.333333333333332,
+                1.2,
+                30
+              ],
+              "dir": [
+                0,
+                0,
+                1
+              ],
+              "rate": 180
+            },
+            "to": {
+              "point": [
+                28.333333333333332,
+                1.2,
+                45
+              ],
+              "dir": [
+                0,
+                0,
+                -1
+              ],
+              "kind": "export"
+            },
+            "item": "aluminumScrap",
+            "rate": 180,
+            "color": "#879ff0",
+            "fromLead": 3.52,
+            "toLead": 2.02,
+            "points": [
+              [
+                28.333333333333332,
+                1.2,
+                30
+              ],
+              [
+                28.333333333333332,
+                1.2,
+                45
+              ]
+            ],
+            "kind": "belt",
+            "capacity": 270
+          },
+          {
+            "id": 8,
+            "from": {
+              "point": [
+                26,
+                5.2,
+                40
+              ],
+              "dir": [
+                0,
+                0,
+                1
+              ]
+            },
+            "to": {
+              "point": [
+                26,
+                5.2,
+                45
+              ],
+              "dir": [
+                0,
+                0,
+                -1
+              ],
+              "kind": "export"
+            },
+            "item": "water",
+            "rate": 120,
+            "color": "#f181b5",
+            "fromLead": 2.03,
+            "toLead": 2.03,
+            "points": [
+              [
+                26,
+                5.2,
+                40
+              ],
+              [
+                26,
+                5.2,
+                45
+              ]
+            ],
+            "kind": "pipe",
+            "capacity": 300,
+            "crossSection": 1,
+            "volume": 5,
+            "segments": [
+              {
+                "from": [
+                  26,
+                  5.2,
+                  40
+                ],
+                "to": [
+                  26,
+                  5.2,
+                  45
+                ],
+                "volume": 5
+              }
+            ],
+            "pumps": []
+          },
+          {
+            "id": 9,
+            "from": {
+              "point": [
+                6,
+                5.2,
+                3
+              ],
+              "dir": [
+                0,
+                0,
+                1
+              ],
+              "kind": "import"
+            },
+            "to": {
+              "point": [
+                6,
+                5.2,
+                4
+              ],
+              "dir": [
+                0,
+                0,
+                -1
+              ]
+            },
+            "item": "aluminaSolution",
+            "rate": 240,
+            "color": "#63d9c3",
+            "fromLead": 2,
+            "toLead": 2,
+            "points": [
+              [
+                6,
+                5.2,
+                3
+              ],
+              [
+                6,
+                5.2,
+                4
+              ]
+            ],
+            "kind": "pipe",
+            "capacity": 300,
+            "crossSection": 1,
+            "volume": 1,
+            "segments": [
+              {
+                "from": [
+                  6,
+                  5.2,
+                  3
+                ],
+                "to": [
+                  6,
+                  5.2,
+                  4
+                ],
+                "volume": 1
+              }
+            ],
+            "pumps": []
+          },
+          {
+            "id": 10,
+            "from": {
+              "point": [
+                42,
+                5.2,
+                3
+              ],
+              "dir": [
+                0,
+                0,
+                1
+              ],
+              "kind": "import"
+            },
+            "to": {
+              "point": [
+                42,
+                5.2,
+                4
+              ],
+              "dir": [
+                0,
+                0,
+                -1
+              ]
+            },
+            "item": "coal",
+            "rate": 120,
+            "color": "#efb86d",
+            "fromLead": 2.01,
+            "toLead": 2.01,
+            "points": [
+              [
+                42,
+                5.2,
+                3
+              ],
+              [
+                42,
+                5.2,
+                4
+              ]
+            ],
+            "kind": "belt",
+            "capacity": 270
+          }
+        ],
+        "products": [
+          "aluminaSolution",
+          "coal",
+          "aluminumScrap",
+          "water"
+        ],
+        "colors": {
+          "aluminaSolution": "#63d9c3",
+          "coal": "#efb86d",
+          "aluminumScrap": "#879ff0",
+          "water": "#f181b5"
+        },
+        "liftPositions": [
+          {
+            "x": 15.333333333333334,
+            "z": 6,
+            "minY": 1.2,
+            "maxY": 5.2,
+            "item": "aluminaSolution"
+          },
+          {
+            "x": 2,
+            "z": 6,
+            "minY": 3.7,
+            "maxY": 5.2,
+            "item": "aluminaSolution"
+          },
+          {
+            "x": 28.333333333333332,
+            "z": 4.5,
+            "minY": 1.2,
+            "maxY": 3.7,
+            "item": "aluminaSolution"
+          },
+          {
+            "x": 46.01,
+            "z": 6,
+            "minY": 1.2,
+            "maxY": 5.2,
+            "item": "coal"
+          },
+          {
+            "x": 31.666666666666668,
+            "z": 2.99,
+            "minY": 1.2,
+            "maxY": 5.2,
+            "item": "coal"
+          },
+          {
+            "x": 18.666666666666668,
+            "z": 32.03,
+            "minY": 1.2,
+            "maxY": 5.2,
+            "item": "water"
+          },
+          {
+            "x": 30.03,
+            "z": 38,
+            "minY": 1.2,
+            "maxY": 5.2,
+            "item": "water"
+          }
+        ],
+        "splitters": 2,
+        "mergers": 1,
+        "lifts": 7,
+        "clearance": 4,
+        "issues": [],
+        "strategy": "manifold",
+        "pumpPower": 0
+      }
+    }
+  ]
+}
