@@ -66,6 +66,26 @@ test('graph balances recycled water against external makeup at each input',()=>{
  const q=JSON.parse(require('node:fs').readFileSync('tests/fixtures/water-repro.fixture.json','utf8')),raw=G.build(q.modules,q.proposal),hub=raw.nodes.find(n=>n.id==='transfer:water');assert.equal(hub.rate,120);const inputs=raw.nodes.filter(n=>n.module===0&&n.type==='import'&&n.item==='water');assert.equal(inputs.reduce((n,v)=>n+v.moduleRate,0),120);assert.equal(inputs.reduce((n,v)=>n+v.externalRate,0),240);for(const n of inputs)assert.equal(n.moduleRate+n.externalRate,n.rate);const stage=G.stageGraph(raw,0);assert.equal(stage.nodes.find(n=>n.id==='transfer:water:input').rate,120);
 });
 
+test('recipe stage boundaries never inflate local supplies or exports',()=>{
+ const q=JSON.parse(require('node:fs').readFileSync('tests/fixtures/water-repro.fixture.json','utf8')),raw=G.build(q.modules,q.proposal),all=G.recipesGraph(raw),before=JSON.stringify(raw);
+ for(let module=0;module<q.modules.length;module++){
+  const stage=G.recipesGraph(G.stageGraph(raw,module));
+  for(const original of all.nodes.filter(n=>n.module===module)){
+   const local=stage.nodes.find(n=>n.id===original.id);assert.ok(local,original.id);
+   for(const field of ['rate','moduleRate','externalRate','count'])assert.equal(local[field],original[field],original.id+' '+field);
+   assert.deepEqual(local.outputs,original.outputs);
+  }
+  for(const boundary of stage.nodes.filter(n=>n.boundary)){
+   const flow=stage.edges.filter(e=>boundary.type==='import'?e.from===boundary.id:e.to===boundary.id).reduce((sum,e)=>sum+e.rate,0);
+   assert.equal(flow,boundary.rate);assert.ok(!stage.edges.some(e=>e.from===boundary.id&&e.to===boundary.id));
+  }
+ }
+ const stage=G.recipesGraph(G.stageGraph(raw,0));
+ assert.equal(stage.nodes.find(n=>n.type==='import'&&n.item==='water'&&!n.boundary).rate,360);
+ assert.equal(stage.nodes.find(n=>n.type==='export'&&n.item==='aluminaSolution'&&!n.boundary).rate,240);
+ assert.equal(JSON.stringify(raw),before);
+});
+
 
 test('recycled byproducts do not collapse production into one graph column',()=>{
  const p=P.plan({...config,product:'aluminumScrap',rate:90,width:128}),raw=G.build([p]);

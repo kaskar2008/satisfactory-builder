@@ -29,6 +29,22 @@ test('explicit external recovery resource separates full supply from byproduct e
  const p=P.plan({...base,product:'aluminumScrap',recipeId:undefined,rate:90,external:['water'],externalFeedbackItems:['water']});assert.equal(p.imports.water,90);assert.equal(p.exports.water,30);assert.equal(p.logistics.flowCheck.valid,true);assert.equal(p.logistics.flowCheck.internalSupply.water,0);
 });
 
+test('external recovery water permits forward aluminum stages without feedback',()=>{
+ const c={product:'aluminumScrap',rate:360,width:48,length:48,height:48,floors:'auto',belt:270,pipeCapacity:300,independentModules:true,allowFeedback:false,externalFeedbackItems:['water']};
+ const a=P.plan({...c,product:'aluminaSolution',rate:240,external:['water','bauxite']}),b=P.plan({...c,external:['water','aluminaSolution','coal']});
+ assert.deepEqual(B.moduleOrder([b,a]),[1,0]);
+ const q=B.compactModules(c,[b,a]);assert.equal(q.modules.length,2);assert.ok(B.moduleOrder(q.modules));assert.ok(!q.links.some(link=>link.item==='water'));
+ assert.equal(q.modules.reduce((sum,p)=>sum+(p.imports.water??0),0),360);assert.equal(q.modules.reduce((sum,p)=>sum+(p.exports.water??0),0),120);
+ for(const p of q.modules)assert.ok(p.logistics.flowCheck.valid);
+ const G=require('../public/graph.js'),g=G.build(q.modules,{...q,links:[...q.links,{item:'water',rate:120}]});assert.ok(!g.nodes.some(n=>n.id==='transfer:water'));
+});
+
+test('compacting external recovery keeps gross supply and byproduct export separate',()=>{
+ const c={product:'aluminumScrap',rate:90,width:128,length:128,height:128,floors:'auto',belt:270,pipeCapacity:300,allowFeedback:false,externalFeedbackItems:['water']};
+ const a=P.plan({...c,product:'aluminaSolution',rate:60,external:['water','bauxite']}),b=P.plan({...c,external:['water','aluminaSolution','coal']}),q=B.compactModules(c,[a,b]);
+ assert.equal(q.modules.length,1);assert.equal(q.modules[0].imports.water,90);assert.equal(q.modules[0].exports.water,30);assert.equal(q.modules[0].logistics.flowCheck.internalSupply.water,0);assert.ok(q.modules[0].logistics.flowCheck.valid);
+});
+
 test('water makeup continues while recycled water is travelling between modules',()=>{
  const c={product:'aluminumScrap',rate:90,width:64,length:64,height:64,floors:'auto',belt:270,pipeCapacity:300,independentModules:true,allowFeedback:true};
  const a=P.plan({...c,product:'aluminaSolution',rate:60,external:['water','bauxite']}),b=P.plan({...c,external:['aluminaSolution','coal']}),q=B.compactModules(c,[a,b]);

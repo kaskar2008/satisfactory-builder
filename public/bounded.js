@@ -92,7 +92,7 @@ old.power=old.machines.reduce((s,m)=>s+root.FactoryPlanner.buildings[m.b].power*
 for(let i=0;i<p.machines.length;i++)Object.assign(p.machines[i],{x:old.machines[i].x,z:old.machines[i].z,rotation:old.machines[i].rotation??0,w:old.machines[i].w,d:old.machines[i].d,floor:old.machines[i].floor});
 root.FactoryLogistics.assignFloors(p);p.bounds=volume(config);for(const g of p.groups){g.machines=p.machines.filter(m=>m.group===g.id);g.floors=[...new Set(g.machines.map(m=>m.floor))];g.floor=g.floors[0]}
 p.config={...p.config,allowRotations:true,junctionSpacing:8,terminalMode:'compact'};try{p.logistics=root.FactoryLogistics.calculate(p,recipes)}catch(e){if(e.code!=='volume-fit'&&!/развести конвейеры|разместить узлы|подход к порту/.test(e.message))throw e;const template=p;p=plan({...p.config,_efficiencyBudget:32},()=>template)}check(p);p.fit={...(p.fit??half.fit),strategy:'shared-final-stage',usedFloors:p.floors.length,repacked:true};plans.push(p)}
-const links=Object.entries(plans[0].exports).filter(([item])=>plans[1].imports[item]).map(([item,rate])=>({item,rate}));checkPerformanceLoad(plans);if(!config.allowFeedback&&!moduleOrder(plans))throw new FitError('Модули образуют обратный поток.');
+const links=Object.entries(plans[0].exports).filter(([item])=>plans[1].imports[item]&&!(config.externalFeedbackItems??[]).includes(item)).map(([item,rate])=>({item,rate}));checkPerformanceLoad(plans);if(!config.allowFeedback&&!moduleOrder(plans))throw new FitError('Модули образуют обратный поток.');
 return {kind:'stages',modules:plans,links,description:'Подготовка ресурсов разделена, финальное производство сосредоточено в одном модуле. Потоки идут только вперёд.'};
 }
 function componentModules(config,raw,full,fitModule){
@@ -109,25 +109,26 @@ function mergeTemplate(config,plans){
 const recipes=root.FactoryPlanner.recipesFor(config),machines=[],groups=[],imports={},exports={},connections=[],produced={},consumed={};
 for(const p of plans)for(const original of p.machines){const m={...original,id:machines.length,floor:0,y:0};delete m.supplyTo;machines.push(m)}
 for(const id of new Set(machines.map(m=>m.group))){const list=machines.filter(m=>m.group===id),r=recipes[id],rate=list.reduce((sum,m)=>sum+r.out*m.clock,0);for(const [item,n] of Object.entries(root.FactoryPlanner.outputs(r,id)))produced[item]=(produced[item]??0)+list.reduce((sum,m)=>sum+n*m.clock,0);groups.push({id,b:r.b,count:list.length,clock:rate/r.out/list.length,clockCeiling:root.FactoryPlanner.recipeCeiling(config,r,id),depth:Math.max(...plans.flatMap(p=>p.groups.filter(g=>g.id===id).map(g=>g.depth))),floor:0,rate,machines:list});for(const [item,n] of Object.entries(r.ins)){const amount=rate*n/r.out;consumed[item]=(consumed[item]??0)+amount;connections.push({from:item,to:id,rate:amount,lanes:Math.ceil(amount/root.FactoryPlanner.transportCapacity(config,item))})}}
-for(const id of new Set([...Object.keys(produced),...Object.keys(consumed)])){const balance=(produced[id]??0)-(consumed[id]??0);if(balance>1e-6)exports[id]=balance;else if(balance<-1e-6)imports[id]=-balance}
+for(const id of new Set([...Object.keys(produced),...Object.keys(consumed)])){if((config.externalFeedbackItems??[]).includes(id)){if(consumed[id]>1e-6)imports[id]=consumed[id];if(produced[id]>1e-6)exports[id]=produced[id];continue}const balance=(produced[id]??0)-(consumed[id]??0);if(balance>1e-6)exports[id]=balance;else if(balance<-1e-6)imports[id]=-balance}
 const product=exports[config.product]?config.product:Object.keys(exports)[0];if(!product)throw new FitError('У объединённого модуля нет выхода.');
 const v=volume(config),p={config:{...config,product,rate:exports[product],external:Object.keys(imports),_compactSupply:true},exports,imports,machines,groups,connections,width:v.width,length:v.length,power:plans.reduce((sum,p)=>sum+p.power,0),shards:machines.reduce((sum,m)=>sum+(m.shards??0),0)};root.FactoryLogistics.assignFloors(p);return p;
 }
 // Check the whole quotient graph: merging the ends of A -> B -> C creates
 // a cycle even when A and C have no direct connection to each other.
+function moduleFeeds(source,target){return Object.entries(source.exports??{[source.config.product]:source.config.rate}).some(([item,rate])=>rate>1e-6&&(target.imports[item]??0)>1e-6&&!(target.config.externalFeedbackItems??[]).includes(item))}
 function moduleOrder(modules){
-const outputs=p=>p.exports??{[p.config.product]:p.config.rate},adj=modules.map(()=>[]),degree=modules.map(()=>0);
-for(let i=0;i<modules.length;i++)for(let j=0;j<modules.length;j++)if(i!==j&&Object.entries(outputs(modules[i])).some(([item,rate])=>rate>1e-6&&(modules[j].imports[item]??0)>1e-6)){adj[i].push(j);degree[j]++}
+const adj=modules.map(()=>[]),degree=modules.map(()=>0);
+for(let i=0;i<modules.length;i++)for(let j=0;j<modules.length;j++)if(i!==j&&moduleFeeds(modules[i],modules[j])){adj[i].push(j);degree[j]++}
 const ready=degree.map((n,i)=>n===0?i:-1).filter(i=>i>=0),order=[];while(ready.length){const i=ready.shift();order.push(i);for(const j of adj[i])if(--degree[j]===0)ready.push(j)}return order.length===modules.length?order:null;
 }
 function compactModules(config,original){
 if(!config.allowFeedback&&!moduleOrder(original)){
  // Fluid recovery can couple two recipes in a loop. Keep each strongly
  // connected component in one module so connections between modules stay forward.
- const output=p=>p.exports??{[p.config.product]:p.config.rate},reach=original.map((p,i)=>original.map((q,j)=>i===j||Object.keys(output(p)).some(item=>(q.imports[item]??0)>1e-6)));
+ const output=p=>p.exports??{[p.config.product]:p.config.rate},reach=original.map((p,i)=>original.map((q,j)=>i===j||moduleFeeds(p,q)));
  for(let k=0;k<original.length;k++)for(let i=0;i<original.length;i++)for(let j=0;j<original.length;j++)reach[i][j]||=reach[i][k]&&reach[k][j];
  const seen=new Set(),bundles=[];for(let i=0;i<original.length;i++){if(seen.has(i))continue;const group=original.filter((_,j)=>reach[i][j]&&reach[j][i]);for(let j=0;j<original.length;j++)if(reach[i][j]&&reach[j][i])seen.add(j);
- if(group.length===1){bundles.push(group[0]);continue}const template=mergeTemplate(config,group);try{bundles.push(plan({...template.config,_efficiencyBudget:64},()=>template))}catch(e){if(e.code!=='volume-fit')throw e;throw Object.assign(new FitError('Этапы с возвратом побочной жидкости не помещаются вместе. Можно разрешить обратные связи или получать возвращаемый ресурс снаружи.'),{feedbackItems:[...new Set(group.flatMap(p=>Object.keys(output(p))).filter(item=>group.some(p=>(p.imports[item]??0)>0)&&group.some(p=>item!==p.config.product&&(output(p)[item]??0)>0)&&root.FactoryPlanner.isFluid(item)))],feedback:true})}}
+ if(group.length===1){bundles.push(group[0]);continue}const template=mergeTemplate(config,group);try{bundles.push(plan({...template.config,_efficiencyBudget:64},()=>template))}catch(e){if(e.code!=='volume-fit')throw e;throw Object.assign(new FitError('Этапы с возвратом побочного ресурса не помещаются вместе. Можно разрешить обратные связи или получать возвращаемый ресурс снаружи.'),{feedbackItems:[...new Set(group.flatMap(p=>Object.keys(output(p))).filter(item=>group.some(p=>(p.imports[item]??0)>0)&&group.some(p=>item!==p.config.product&&(output(p)[item]??0)>0)))],feedback:true})}}
  original=bundles;if(!moduleOrder(original))throw new FitError('Модули образуют обратный поток. Нужно разделить этапы производства.');
 }
 let bins=original.map((p,i)=>({p,origins:[i]}));const failed=new Set(),end=performance.now()+90000;
@@ -146,7 +147,7 @@ for(const item of new Set(modules.flatMap(p=>Object.keys(output(p))))){const rat
 return {kind:'stages',modules,links,description:'Этапы размещены в модулях с использованием доступных этажей (до уплотнения: '+original.length+'). Общий целевой выпуск сохранён.'+(config.independentModules?' Производство разделено по рецептам; части одного этапа уплотняются вместе.':' Совместимые этапы объединены для уменьшения количества модулей.')+(config.allowFeedback?' Обратные связи разрешены.':' Все поставки направлены только вперёд.')};}
 function stackCandidate(config,plans,template){
 const exports=p=>p.exports??{[p.config.product]:p.config.rate};
-if(!plans.some((p,i)=>plans.some((q,j)=>i!==j&&Object.keys(exports(p)).some(item=>(q.imports[item]??0)>1e-7))))return stackIndependent(config,plans,template);
+if(!plans.some((p,i)=>plans.some((q,j)=>i!==j&&Object.keys(exports(p)).some(item=>(q.imports[item]??0)>1e-7&&!(q.config.externalFeedbackItems??[]).includes(item)))))return stackIndependent(config,plans,template);
 const p=structuredClone(template);let floor=0,index=0;
 for(const plan of plans){for(const original of plan.machines){Object.assign(p.machines[index++],{x:original.x,z:original.z,rotation:original.rotation??0,w:original.w,d:original.d,floor:floor+original.floor})}floor+=plan.fit.usedFloors}
 if(config.floors!=='auto'&&floor>config.floors)throw new FitError('Превышен максимум этажей.');

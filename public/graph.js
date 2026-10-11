@@ -4,6 +4,12 @@ const key=p=>p.map(v=>Math.round(v*1e5)).join(','),fmt=n=>new Intl.NumberFormat(
 function count(n,a,b,c){const v=Math.abs(n)%100;return n+' '+(v>=11&&v<=14?c:v%10===1?a:v%10>=2&&v%10<=4?b:c)}
 function wrapText(value,limit){const lines=[];let line='';for(const word of String(value??'').split(/\s+/)){if(line&&(line+' '+word).length>limit){lines.push(line);line=word}else line+=(line?' ':'')+word}if(line)lines.push(line);return lines}
 function secondaryOutputLines(n){const P=root.FactoryPlanner;return (n.outputs??[]).filter(o=>o.item!==n.item).flatMap(o=>wrapText(P.items[o.item]+' · '+fmt(o.rate)+' '+(P.isFluid(o.item)?'м³':'шт')+'/мин',32))}
+function cardText(n,mode){
+ const P=root.FactoryPlanner,name=mode==='recipes'&&n.type==='machine'?P.items[n.item]:n.label,detail=mode==='recipes'&&n.type==='machine'?count(n.count,'станок','станка','станков')+' · '+P.buildings[n.building].name:n.detail;
+ const supplyDetail=n.type==='import'&&n.moduleRate>0?detail+' · из модулей '+fmt(n.moduleRate)+' / извне '+fmt(n.externalRate??0):detail,titles=wrapText(name,22),details=wrapText(supplyDetail,25),titleSize=12,detailSize=11;
+ const detailY=14+Math.max(0,titles.length-1)*(titleSize+1)+14,rateY=detailY+Math.max(0,details.length-1)*(detailSize+1)+18;
+ return {name,supplyDetail,titles,details,titleSize,detailSize,detailY,rateY};
+}
 function productionRanks(nodes,edges){
  const byId=new Map(nodes.map(n=>[n.id,n])),out=new Map(nodes.map(n=>[n.id,[]])),degree=new Map(nodes.map(n=>[n.id,0]));
  const reaches=(from,to)=>{const stack=[from],seen=new Set();while(stack.length){const id=stack.pop();if(id===to)return true;if(seen.has(id))continue;seen.add(id);stack.push(...out.get(id))}return false};
@@ -22,7 +28,7 @@ function build(plans,proposal){
  });
  if(proposal?.kind==='stages')for(const link of proposal.links){
   const sources=new Set(plans.flatMap((p,i)=>(p.exports?p.exports[link.item]:p.config.product===link.item)?[i]:[]));if(!sources.size)sources.add(0);
-  const exports=nodes.filter(n=>n.type==='export'&&n.item===link.item&&sources.has(n.module)).map(n=>({n,remaining:n.rate,used:0})),imports=nodes.filter(n=>n.type==='import'&&n.item===link.item);
+  const exports=nodes.filter(n=>n.type==='export'&&n.item===link.item&&sources.has(n.module)).map(n=>({n,remaining:n.rate,used:0})),imports=nodes.filter(n=>n.type==='import'&&n.item===link.item&&!(plans[n.module].config.externalFeedbackItems??[]).includes(link.item));
   const allocations=[];for(const input of imports){let remaining=input.rate;for(const source of exports){if(source.n.module===input.module)continue;const rate=Math.min(remaining,source.remaining);if(rate<=1e-7)continue;allocations.push({input,rate});source.remaining-=rate;source.used+=rate;remaining-=rate}input.moduleRate=input.rate-remaining;input.externalRate=remaining}
   if(!allocations.length)continue;const id='transfer:'+link.item;nodes.push({id,item:link.item,type:'transfer',label:'Между модулями',detail:P.items[link.item],rate:allocations.reduce((n,e)=>n+e.rate,0)});
   for(const source of exports)if(source.used>1e-7)edges.push({id:id+':'+source.n.id,from:source.n.id,to:id,item:link.item,rate:source.used,kind:'transfer',color:'#81cbb5'});
@@ -53,7 +59,7 @@ function build(plans,proposal){
 
 }
 function layout(nodes,edges){
- for(const n of nodes)n.height=78+(secondaryOutputLines(n).length?12+secondaryOutputLines(n).length*14:0);const rowHeight=Math.max(130,...nodes.map(n=>n.height+52));
+ for(const n of nodes)n.height=Math.max(78,cardText(n,'recipes').rateY+10,cardText(n,'all').rateY+10)+(secondaryOutputLines(n).length?12+secondaryOutputLines(n).length*14:0);const rowHeight=Math.max(130,...nodes.map(n=>n.height+52));
  const byId=new Map(nodes.map(n=>[n.id,n])),layers=[],chains=new Map(),before=new Map(),after=new Map();
  const add=n=>{(layers[n.rank]??=[]).push(n);before.set(n.id,[]);after.set(n.id,[])};nodes.forEach(add);
  // Reserve a lane in every skipped column so long edges cannot pass through cards.
@@ -84,7 +90,8 @@ function layout(nodes,edges){
 function recipesGraph(raw){
  const nodes=[],byKey=new Map(),mapping=new Map();
  for(const original of raw.nodes){if(original.type==='splitter'||original.type==='merger')continue;
- const key=original.module+':'+original.type+':'+(original.type==='machine'?original.item+':'+original.building:original.item??original.id);
+ // Stage boundaries describe the same flow as the local import/export, not extra supply.
+ const key=original.module+':'+original.type+':'+(original.boundary?original.id:original.type==='machine'?original.item+':'+original.building:original.item??original.id);
  let n=byKey.get(key);if(!n){n={...original,id:key,count:0,rate:0,outputs:[],moduleRate:0,externalRate:0};byKey.set(key,n);nodes.push(n)}for(const output of original.outputs??[]){let target=n.outputs.find(o=>o.item===output.item);if(!target){target={item:output.item,rate:0};n.outputs.push(target)}target.rate+=output.rate}n.count+=original.count??1;n.rate+=original.rate??0;n.moduleRate+=original.moduleRate??0;n.externalRate+=original.externalRate??0;mapping.set(original.id,n.id);
  }
  const out=new Map(raw.nodes.map(n=>[n.id,[]]));for(const e of raw.edges)out.get(e.from).push(e);
@@ -106,11 +113,11 @@ function stageGraph(raw,module){
  for(const hub of raw.nodes.filter(n=>n.type==='transfer')){
   const incoming=raw.edges.filter(e=>e.from===hub.id&&ids.has(e.to)),outgoing=raw.edges.filter(e=>e.to===hub.id&&ids.has(e.from));
   if(incoming.length){const sources=[...new Set(raw.edges.filter(e=>e.to===hub.id).map(e=>raw.nodes.find(n=>n.id===e.from)?.module).filter(m=>m!==undefined&&m!==module))];
-   const sourceId=hub.id+':input';nodes.push({...hub,id:sourceId,module,type:'import',externalRate:0,moduleRate:incoming.reduce((n,e)=>n+e.rate,0),label:'Из '+sources.map(m=>'модуля '+(m+1)).join(', '),rate:incoming.reduce((n,e)=>n+e.rate,0),rank:0});
+   const sourceId=hub.id+':input';nodes.push({...hub,id:sourceId,module,boundary:true,type:'import',externalRate:0,moduleRate:incoming.reduce((n,e)=>n+e.rate,0),label:'Из '+sources.map(m=>'модуля '+(m+1)).join(', '),rate:incoming.reduce((n,e)=>n+e.rate,0),rank:0});
    let distributor=sourceId;if(incoming.length>1){distributor=sourceId+':splitter';nodes.push({id:distributor,module,item:hub.item,type:'splitter',label:'Разветвитель',detail:root.FactoryPlanner.items[hub.item],rank:0});edges.push({id:distributor+':feed',from:sourceId,to:distributor,item:hub.item,rate:incoming.reduce((n,e)=>n+e.rate,0),kind:'transfer',color:incoming[0].color})}
    for(const e of incoming)edges.push({...e,from:distributor});
   }
-  if(outgoing.length){const id=hub.id+':output',destinations=[...new Set(raw.edges.filter(e=>e.from===hub.id).map(e=>raw.nodes.find(n=>n.id===e.to)?.module).filter(m=>m!==undefined&&m!==module))];nodes.push({...hub,id,module,type:'export',label:'В '+destinations.map(m=>'модуль '+(m+1)).join(', '),rate:outgoing.reduce((n,e)=>n+e.rate,0),rank:0});for(const e of outgoing)edges.push({...e,to:id})}
+  if(outgoing.length){const id=hub.id+':output',destinations=[...new Set(raw.edges.filter(e=>e.from===hub.id).map(e=>raw.nodes.find(n=>n.id===e.to)?.module).filter(m=>m!==undefined&&m!==module))];nodes.push({...hub,id,module,boundary:true,type:'export',label:'В '+destinations.map(m=>'модуль '+(m+1)).join(', '),rate:outgoing.reduce((n,e)=>n+e.rate,0),rank:0});for(const e of outgoing)edges.push({...e,to:id})}
  }
  const byId=new Map(nodes.map(n=>[n.id,n])),degree=new Map(nodes.map(n=>[n.id,0])),out=new Map(nodes.map(n=>[n.id,[]]));for(const e of edges){degree.set(e.to,degree.get(e.to)+1);out.get(e.from).push(e.to)}const queue=nodes.filter(n=>!degree.get(n.id));for(let i=0;i<queue.length;i++)for(const id of out.get(queue[i].id)){const n=byId.get(id);n.rank=Math.max(n.rank,queue[i].rank+1);degree.set(id,degree.get(id)-1);if(!degree.get(id))queue.push(n)}productionRanks(nodes,edges);
  const graph=layout(nodes,edges);graph.groups=raw.groups.filter(g=>g.module===module).map(g=>({...g,x:0,width:graph.width,height:graph.height}));return graph;
@@ -136,12 +143,10 @@ function render(host,plans,proposal,{flow='all',module='all',mode='recipes',onSe
  g.append(el('rect',{x:n.x,y:n.y,width:230,height:n.height,rx:16,fill:n.type==='machine'?'#283b43':'#1c3034',stroke:color}));
  if(n.type==='machine'){const clipId='graph-craft-'+animation.nodes.length,clip=el('clipPath',{id:clipId});clip.append(el('rect',{x:n.x,y:n.y,width:230,height:n.height,rx:16}));defs.append(clip);const fill=el('rect',{x:n.x,y:n.y,width:0,height:n.height,fill:'#50dfb0','fill-opacity':.22,'clip-path':'url(#'+clipId+')','pointer-events':'none'});g.append(fill);animation.nodes.push({node:n,fill})}
  const icon=P.itemIcons[n.item];if(icon){g.append(el('circle',{cx:n.x+35,cy:n.y+39,r:26,fill:'#15252e',stroke:color,'stroke-opacity':.5}));g.append(el('image',{href:icon,x:n.x+13,y:n.y+17,width:44,height:44}))}
- const x=n.x+(icon?70:12),name=mode==='recipes'&&n.type==='machine'?P.items[n.item]:n.label,detail=mode==='recipes'&&n.type==='machine'?count(n.count,'станок','станка','станков')+' · '+P.buildings[n.building].name:n.detail,rate=n.rate?fmt(n.rate)+' '+(P.isFluid(n.item)?'м³':'шт')+'/мин':n.module===undefined?'Между этапами':'Модуль '+(n.module+1);
- const wrap=(value,limit)=>{const words=String(value??'').split(/\s+/),lines=[];let line='';for(const word of words){if(line&&(line+' '+word).length>limit){lines.push(line);line=word}else line+=(line?' ':'')+word}if(line)lines.push(line);return lines};
- const supplyDetail=n.type==='import'&&n.moduleRate>0?detail+' · из модулей '+fmt(n.moduleRate)+' / извне '+fmt(n.externalRate??0):detail;const titles=wrap(name,22),details=wrap(supplyDetail,25),titleSize=Math.min(12,30/Math.max(1,titles.length)),detailSize=Math.min(11,20/Math.max(1,details.length));
+ const x=n.x+(icon?70:12),{name,supplyDetail,titles,details,titleSize,detailSize,detailY,rateY}=cardText(n,mode),rate=n.rate?fmt(n.rate)+' '+(P.isFluid(n.item)?'м³':'шт')+'/мин':n.module===undefined?'Между этапами':'Модуль '+(n.module+1);
  const title=el('text',{x,y:n.y+14,class:'graph-node-title','font-size':titleSize,style:'font-size:'+titleSize+'px'});titles.forEach((line,i)=>title.append(el('tspan',{x,dy:i?titleSize+1:0},line)));
- const detailText=el('text',{x,y:n.y+49,class:'graph-node-detail',style:'font-size:'+detailSize+'px'});details.forEach((line,i)=>detailText.append(el('tspan',{x,dy:i?detailSize:0},line)));
- g.append(title,detailText,el('text',{x,y:n.y+72,class:'graph-node-rate'},rate));const secondary=secondaryOutputLines(n);secondary.forEach((line,i)=>g.append(el('text',{x:n.x+12,y:n.y+94+i*14,class:'graph-node-detail',style:'font-size:11px'},line)));g.append(el('title',{},name+' · '+supplyDetail+' · '+rate+(secondary.length?' · '+secondary.join(' '):'')));svg.append(g)}
+ const detailText=el('text',{x,y:n.y+detailY,class:'graph-node-detail',style:'font-size:'+detailSize+'px'});details.forEach((line,i)=>detailText.append(el('tspan',{x,dy:i?detailSize+1:0},line)));
+ g.append(title,detailText,el('text',{x,y:n.y+rateY,class:'graph-node-rate'},rate));const secondary=secondaryOutputLines(n);secondary.forEach((line,i)=>g.append(el('text',{x:n.x+12,y:n.y+Math.max(94,rateY+22)+i*14,class:'graph-node-detail',style:'font-size:11px'},line)));g.append(el('title',{},name+' · '+supplyDetail+' · '+rate+(secondary.length?' · '+secondary.join(' '):'')));svg.append(g)}
 
  const cards=graph.nodes.filter(n=>visible.has(n.id));if(cards.length){const left=Math.min(...cards.map(n=>n.x)),top=Math.min(...cards.map(n=>n.y)),right=Math.max(...cards.map(n=>n.x+230)),bottom=Math.max(...cards.map(n=>n.y+n.height));svg.setAttribute('data-content-bounds',JSON.stringify([left,top,right-left,bottom-top]))}
  animation.layer=el('g',{'pointer-events':'none',class:'graph-simulation-particles'});svg.append(animation.layer);host.__graph=graph;host.replaceChildren(svg);return graph;
