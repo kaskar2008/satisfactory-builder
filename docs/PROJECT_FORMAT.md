@@ -26,3 +26,12 @@ the prior snapshot. Successful multi-module calculations save all modules in one
 record. A storage failure keeps the finished factory visible and asks the user
 to export it. Unsupported or damaged snapshots produce a recovery error rather
 than silently starting an expensive calculation.
+
+Layout alternatives
+-------------------
+
+When several layouts of a module were routed successfully, the displayed one
+stores the others in `fit.alternatives`, each encoded like a module (without
+nested alternatives). Every layout carries `fit.optimization.rank` (0 is the
+cheapest). Alternatives are validated only when the user switches to one; the
+chosen layout becomes the module and the previous one moves into the list.

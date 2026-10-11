@@ -25,8 +25,9 @@ const normalized={...config,width:v.width,length:v.length,height:v.height},templ
 let attempts=0;const triedLayouts=new Set();
 // Floors are a ceiling: exhaust compact layouts before adding another level.
 for(let floorLimit=1;floorLimit<=maxFloors;floorLimit++){
-let best=null,firstFitAttempt=0,validLayouts=0,routedAfterFit=0;
-const finish=()=>{best.fit.optimization={validLayouts,additionalRoutes:routedAfterFit,cost:root.FactoryLogistics.constructionCost([best])};return best};
+let best=null,firstFitAttempt=0,validLayouts=0,routedAfterFit=0;const valid=[];
+// Every routed layout stays selectable; the cheapest one is shown first.
+const finish=()=>{const L=root.FactoryLogistics,ranked=[...valid].sort((a,b)=>L.compareConstruction([a],[b]));ranked.forEach((v,rank)=>{v.fit.optimization={validLayouts,additionalRoutes:routedAfterFit,cost:L.constructionCost([v]),rank}});best=ranked[0];best.fit.alternatives=ranked.slice(1);return best};
 // Preserve the established layouts, then try compact rotated packings before
 // spending another floor. Repeating every wide-gap layout for four headings
 // adds expensive routing attempts without helping the compact-fit search.
@@ -59,7 +60,7 @@ for(const m of p.machines){m.floor=floorMap.get(m.floor);m.y=0}for(const g of p.
 root.FactoryLogistics.assignFloors(p);if(p.floors.at(-1).ceiling>v.height)continue;
 const layoutKey=p.machines.map(m=>[m.x,m.z,m.floor,m.rotation,p.config.allowRotations].join(',')).join(';');if(triedLayouts.has(layoutKey))continue;triedLayouts.add(layoutKey);
 if(best)routedAfterFit++;
-try{p.logistics=root.FactoryLogistics.calculate(p,root.FactoryPlanner.recipesFor(p.config));check(p);p.fit={attempts,repacked:true,strategy,gap,padding,usedFloors:occupied.length,maxFloors,floorMode:config.floors==='auto'?'auto':'limit'};validLayouts++;if(!best){best=p;firstFitAttempt=attempts}else if(root.FactoryLogistics.compareConstruction([p],[best])<0)best=p;if(validLayouts>=3)return finish()}catch(e){if(e.code!=='volume-fit'&&!/развести конвейеры|разместить узлы|подход к порту/.test(e.message))throw e}
+try{p.logistics=root.FactoryLogistics.calculate(p,root.FactoryPlanner.recipesFor(p.config));check(p);p.fit={attempts,repacked:true,strategy,gap,padding,usedFloors:occupied.length,maxFloors,floorMode:config.floors==='auto'?'auto':'limit'};validLayouts++;valid.push(p);if(!best){best=p;firstFitAttempt=attempts}else if(root.FactoryLogistics.compareConstruction([p],[best])<0)best=p;if(validLayouts>=3)return finish()}catch(e){if(e.code!=='volume-fit'&&!/развести конвейеры|разместить узлы|подход к порту/.test(e.message))throw e}
 }
 if(best)return finish();
 }
@@ -91,7 +92,7 @@ for(const sink of [false,true]){const old=structuredClone(half);if(sink){const f
 old.power=old.machines.reduce((s,m)=>s+root.FactoryPlanner.buildings[m.b].power*Math.pow(m.clock,1.321928),0);let p=mergeTemplate(config,[old]);
 for(let i=0;i<p.machines.length;i++)Object.assign(p.machines[i],{x:old.machines[i].x,z:old.machines[i].z,rotation:old.machines[i].rotation??0,w:old.machines[i].w,d:old.machines[i].d,floor:old.machines[i].floor});
 root.FactoryLogistics.assignFloors(p);p.bounds=volume(config);for(const g of p.groups){g.machines=p.machines.filter(m=>m.group===g.id);g.floors=[...new Set(g.machines.map(m=>m.floor))];g.floor=g.floors[0]}
-p.config={...p.config,allowRotations:true,junctionSpacing:8,terminalMode:'compact'};try{p.logistics=root.FactoryLogistics.calculate(p,recipes)}catch(e){if(e.code!=='volume-fit'&&!/развести конвейеры|разместить узлы|подход к порту/.test(e.message))throw e;const template=p;p=plan({...p.config,_efficiencyBudget:32},()=>template)}check(p);p.fit={...(p.fit??half.fit),strategy:'shared-final-stage',usedFloors:p.floors.length,repacked:true};plans.push(p)}
+p.config={...p.config,allowRotations:true,junctionSpacing:8,terminalMode:'compact'};try{p.logistics=root.FactoryLogistics.calculate(p,recipes)}catch(e){if(e.code!=='volume-fit'&&!/развести конвейеры|разместить узлы|подход к порту/.test(e.message))throw e;const template=p;p=plan({...p.config,_efficiencyBudget:32},()=>template)}check(p);const own=!!p.fit;p.fit={...(p.fit??half.fit),strategy:'shared-final-stage',usedFloors:p.floors.length,repacked:true};if(!own){delete p.fit.alternatives;delete p.fit.optimization}plans.push(p)}
 const links=Object.entries(plans[0].exports).filter(([item])=>plans[1].imports[item]&&!(config.externalFeedbackItems??[]).includes(item)).map(([item,rate])=>({item,rate}));checkPerformanceLoad(plans);if(!config.allowFeedback&&!moduleOrder(plans))throw new FitError('Модули образуют обратный поток.');
 return {kind:'stages',modules:plans,links,description:'Подготовка ресурсов разделена, финальное производство сосредоточено в одном модуле. Потоки идут только вперёд.'};
 }
@@ -100,7 +101,10 @@ const modules=[],links=[];let completed=0;
 for(const g of full.groups){root.FactoryCheckBudget?.();root.FactoryProgress?.({stage:'modules',percent:82+12*completed/full.groups.length,message:'Собираем отдельные модули: '+root.FactoryPlanner.items[g.id]+' · готово '+modules.length});
  const external=[...new Set([...(config.external||[]),...Object.keys(root.FactoryPlanner.recipesFor(config)[g.id].ins)])];let fitted=null;
  const counts=[...new Set([1,2,4,8,g.count].filter(n=>n<=g.count))].sort((a,b)=>a-b);
- for(const count of counts){try{const p=fitModule({...config,product:g.id,rate:g.rate/count,external,_compactSupply:true});fitted={p,count};break}catch(e){if(!['volume-fit','module-timeout'].includes(e.code))throw e}}
+ const tryCount=count=>{try{fitted={p:fitModule({...config,product:g.id,rate:g.rate/count,external,_compactSupply:true}),count};return true}catch(e){if(!['volume-fit','module-timeout'].includes(e.code))throw e;return false}};
+ let failed=0;for(const count of counts){if(tryCount(count))break;failed=count}
+ // The ladder skips counts; bisect between the last failure and the first fit so 3 modules are not rounded up to 4.
+ if(fitted)for(let hi=fitted.count,mid=failed+hi>>1;hi-failed>1;mid=failed+hi>>1){if(tryCount(mid))hi=mid;else failed=mid}
  if(!fitted)throw new FitError('Даже отдельный станок для «'+root.FactoryPlanner.items[g.id]+'» с коммуникациями не удалось разместить в выбранных границах. Увеличьте размер модуля.');
  for(let i=0;i<fitted.count;i++)modules.push(structuredClone(fitted.p));completed++;
 }

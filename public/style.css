@@ -72,9 +72,9 @@ header .button,header button{gap:7px}#generate{z-index:130}.viewport{scroll-marg
 .graph-controls>button{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;padding:8px 12px}
 @media(max-width:600px){.graph-mode .view-toolbar #simulate{margin-left:0}.graph-mode .view-toolbar .segmented{margin-right:auto}.graph-controls>select{flex:1 1 150px}.graph-controls>button{flex:0 0 auto}}
 
-.graph-mode .view-toolbar{flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;align-items:center;gap:8px;padding-bottom:2px}
+.graph-mode .view-toolbar{flex-wrap:wrap;overflow:visible;align-items:center;gap:8px}
 .graph-mode .view-toolbar>*{flex-shrink:0}
-.graph-mode .view-toolbar .graph-controls{display:flex;flex-wrap:nowrap;gap:8px;margin:0;padding:0;border:0;flex:0 0 auto}
+.graph-mode .view-toolbar .graph-controls{display:contents}
 .graph-mode .view-toolbar .graph-controls>select{flex:0 0 auto;width:160px;min-width:0;max-width:none;margin:0;height:38px;font-size:11px}
 .graph-mode .view-toolbar .graph-controls>select[aria-label="Детализация графа"]{width:178px}
 .graph-mode .view-toolbar .graph-controls>button{flex:0 0 auto;height:38px;font-size:11px}
@@ -111,3 +111,26 @@ button[hidden],.button[hidden]{display:none!important}
 @media(max-width:760px),(pointer:coarse){#label-settings .label-options{position:fixed;right:12px;top:var(--labels-menu-top,120px);width:245px;max-width:calc(100vw - 24px);max-height:calc(100dvh - var(--labels-menu-top,120px) - 12px);overflow-y:auto;overscroll-behavior:contain;z-index:80}.label-options label{min-height:44px}}
 
 body.view-expanded #generate{display:none}
+.workspace-head{gap:12px;margin-bottom:14px}
+.row:has(+.layout-options){border-bottom:0}
+.layout-options{display:grid;gap:8px;padding:0 0 10px;border-bottom:1px solid #2c353a}
+.layout-options button,.layout-menu button{display:block;width:100%;text-align:left;padding:10px 12px;border:1px solid #343c40;border-radius:8px;background:#1a2022;color:inherit}
+.layout-options button strong,.layout-menu button strong{display:block;font-size:12px}
+.layout-options button small,.layout-menu button small{display:block;color:#82949d;font-size:10px;margin-top:4px;line-height:1.4}
+.layout-options button[aria-pressed="true"],.layout-menu button[aria-pressed="true"]{border-color:#50dfb0;background:#1d2b29;cursor:default}
+.layout-options button:not([aria-pressed="true"]):hover,.layout-menu button:not([aria-pressed="true"]):hover{background:#252e31}
+.layout-picker{position:relative}
+.layout-picker[hidden]{display:none}
+.layout-picker-button{gap:10px;font-size:11px;padding:8px 12px}
+.layout-picker-button i{width:6px;height:6px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px)}
+.layout-picker-button[aria-expanded="true"] i{transform:rotate(225deg)}
+.layout-menu{position:absolute;right:0;top:calc(100% + 6px);z-index:30;display:grid;gap:8px;width:min(380px,calc(100vw - 24px));padding:10px;border:1px solid #343c40;border-radius:10px;background:#151b1e;box-shadow:0 14px 36px #0009}
+.layout-menu[hidden]{display:none}
+#label-settings summary{display:flex;align-items:center;gap:8px;min-height:40px;box-sizing:border-box;padding:7px 32px 7px 10px;font-size:11px;color:#e5eaed;background:#1a2429 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='m1 1 5 5 5-5' fill='none' stroke='%23c6d3da' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 12px center;border:1px solid #394247;border-radius:6px;user-select:none}
+#label-settings summary::-webkit-details-marker{display:none}
+#label-settings summary .button-icon{width:16px;height:16px;flex:0 0 16px}
+#label-settings[open] summary{border-color:#eea25e}
+@media(pointer:coarse){#label-settings summary{min-height:44px}}
+.view-toolbar #reset,.view-toolbar #expand-view{margin-left:0}
+.graph-mode .view-toolbar{overflow:visible}
+@media(max-width:600px){.graph-mode .view-toolbar .graph-controls>select,.graph-mode .view-toolbar .graph-controls>select[aria-label="Детализация графа"]{width:calc(50% - 4px);flex:0 0 auto}}

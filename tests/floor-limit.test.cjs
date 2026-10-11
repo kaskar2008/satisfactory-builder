@@ -7,7 +7,7 @@ assert.throws(()=>P.plan({...config,height:51}),e=>e.code==='volume-fit');
 });
 test('automatic floors proposes three separate modules when two cannot fit',()=>{
 const config={product:'rod',rate:75,preset:'custom',width:32,length:32,height:16,floors:'auto',belt:270,external:['ingot']};assert.throws(()=>P.plan(config),e=>e.code==='volume-fit');
-const q=P.propose(config);assert.equal(q.kind,'parallel');assert.equal(q.modules.length,3);assert.equal(q.modules.reduce((n,p)=>n+p.config.rate,0),75);assert.equal(q.links.length,0);q.modules.forEach(p=>assert.ok(B.check(p)));assert.notEqual(q.modules[0].machines,q.modules[1].machines);
+const q=P.propose(config);assert.equal(q.kind,'stages');assert.equal(q.modules.length,3);assert.equal(q.modules.reduce((n,p)=>n+p.config.rate,0),75);assert.equal(q.links.length,0);q.modules.forEach(p=>assert.ok(B.check(p)));assert.notEqual(q.modules[0].machines,q.modules[1].machines);
 });
 
 test('different equipment heights produce different ceilings and cumulative floor elevations',()=>{

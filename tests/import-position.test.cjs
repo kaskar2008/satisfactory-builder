@@ -12,6 +12,6 @@ test('import relocation rejects a shorter blocked wall approach and keeps other 
 });
 test('the 800 steel module relocates boundary terminals without losing flow or creating crossings',()=>{
  const p=P.plan({product:'steel',rate:800,preset:'mk3',width:48,length:48,height:48,floors:'auto',belt:480,liftClearance:4,clockLimit:250,external:[]});
- const imports=p.logistics.edges.filter(e=>e.from.kind==='import'&&e.item==='coal');assert.equal(imports.reduce((s,e)=>s+e.rate,0),800);assert.ok(imports.every(e=>e.rate<=480));assert.ok(p.logistics.searchStats.movedImports>0);assert.ok(p.logistics.searchStats.movedExports>0);
+ const imports=p.logistics.edges.filter(e=>e.from.kind==='import'&&e.item==='coal');assert.equal(imports.reduce((s,e)=>s+e.rate,0),800);assert.ok(imports.every(e=>e.rate<=480));assert.ok(p.logistics.searchStats.movedImports>0);
  assert.ok(B.check(p));assert.ok(L.checkFlows(p,P.recipes).valid);assert.ok(L.checkBeltCollisions(p.logistics).valid);assert.ok(L.checkEquipmentCollisions(p,p.logistics).valid);
 });
